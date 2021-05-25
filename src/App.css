@@ -16,3 +16,15 @@
   width: 40px;
   border: 2px, solid, black;
 }
+
+.the-wrap {
+  background-color: green;
+}
+
+#displayn {
+  width: 300px;
+  height: 300px;
+  border-width: 5px;
+  border-color: purple;
+  /* background-color: green; */
+}
