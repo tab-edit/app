@@ -20,6 +20,16 @@ export default class TabTree {
         return returnVal;
     }
 
+    inorder() : string[] {
+        let arr:string[] = [];
+        let navigator = this.navigator;
+        while(navigator) {
+            arr.push(navigator.toString());
+            navigator = navigator.next();
+        }
+        return arr;
+    }
+
     addFrom(subtreeRoot:TreeNode, fragment:TabFragment) : TreeNavigator|null {
         let nearestNode = this.searchNearestNode(subtreeRoot, fragment);
         let newNode = new TreeNode(this, fragment, nearestNode);
@@ -190,20 +200,6 @@ export default class TabTree {
         }
         return nearestNode;
     }
-
-    inorder() : TabFragment[] {
-        let arr:TabFragment[] = [];
-        return this.inorderHelper(this.head, arr);
-    }
-
-    inorderHelper(subtreeRoot:TreeNode|null, arr:TabFragment[]) : TabFragment[]{
-        if (subtreeRoot) {
-            this.inorderHelper(subtreeRoot.left, arr);
-            arr.push(subtreeRoot.content);
-            this.inorderHelper(subtreeRoot.right, arr)
-        }
-        return arr;
-    }
 }
 
 class TreeNode {
@@ -277,6 +273,10 @@ class TreeNode {
         return item1.compareTo(item2 instanceof TreeNode ? item2.content : item2);
     }
 
+    toString() {
+        return this.content.content;
+    }
+
     get navigator() {return this.#navigator}
 }
 
@@ -335,4 +335,6 @@ export class TreeNavigator {
         }
         return next;
     }
+
+    toString() { return this.#node?.toString() || "" }
 }

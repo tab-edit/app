@@ -19,12 +19,16 @@ export default class Model {
         this.#tree = new TabTree();
     }
 
+    get tree() { return this.#tree }
+
     get isActive() { return this.#isActive }
     update(newText:string) {
+        console.clear();
         this.#isActive = true;
         this.#newText = newText;
         let tokens = this.getParseTokens();
         if (tokens) this.#textState = this.parse(tokens).newText;
+        console.log(this.tree.inorder());
         this.#isActive = false;
     }
 
@@ -54,21 +58,22 @@ export default class Model {
             newTextIdx:  0,
             textCollector: "",
             diffCollector:emptyDiffArr,
-            next(customNext?:Diff) {
+            next(customNext?:Diff) : boolean {
                 this.diffCollector.push(this.curr);
                 this.textCollector += this.curr[0]>=0 ? this.curr[1] : "";
                 this.oldTextIdx += this.curr[0]===0 ? this.curr[1].length : 0;
                 this.newTextIdx += this.curr[0]===0 ? this.curr[1].length : this.curr[0]*this.curr[1].length;
                 this.curr = customNext || textDiffs[++this.currDiffIxd];
+                return !!this.curr;
             },
-            splitAt(idx:number) {
+            splitAt(idx:number) : boolean {
                 //we will not split additions because we are splitting based on the old text and addition is at a single point from the reference of the old text
                 if (this.curr[0]===1) throw new Error('Cannot split additions to a text'); 
                 //cut in two
                 let splitIdx = this.oldTextIdx-idx;
 
                 //we have a certain size of text that this current diff contains. we cannot split past the range of that text
-                if (splitIdx<0 || splitIdx>this.oldTextIdx+this.curr[1].length) throw new Error('Diff split range out of bounds');
+                if (idx<=0 || idx>this.curr[1].length) return false;
 
                 let firstHalf = this.curr[1].substring(0, splitIdx);
                 let secondHalf = this.curr[1].substring(splitIdx);
@@ -105,32 +110,48 @@ export default class Model {
             changeFound:      false,
             currentFragNode: navigator,
             lastUnchangedFragNode:navigator,
+            outOfDiffs: false,
+            criticalOverlap: false,
 
             get currentDiff() { return this.diffNav.curr; },
 
             collectDiff() {
-                this.changeFound = this.diffNav.curr[0]!==0;
+                this.changeFound = this.changeFound || this.diffNav.curr[0]!==0;
                 this.diffNav.next();
+                if (!this.diffNav.curr) this.outOfDiffs = true;
             },
 
             getNextFragNode() : TreeNavigator|null {
-                let currentFragNode = this.currentFragNode.next();
-                if (currentFragNode) this.currentFragNode = currentFragNode;
-                return currentFragNode;
+                if (this.criticalOverlap) this.itemsToRemove.push(this.currentFragNode);
+                let nextFragNode = this.currentFragNode.next();
+                if (nextFragNode) this.currentFragNode = nextFragNode;
+                return nextFragNode;
             },
             
             splitDiff() {
                 let splitIdx = this.currentFragNode.content.position-this.diffNav.oldTextIdx;
-                this.diffNav.splitAt(splitIdx);
+                if (!this.diffNav.splitAt(splitIdx)) return;
+                this.changeFound = this.changeFound || this.diffNav.curr[0]!==0;
+                if (!this.diffNav.curr) this.outOfDiffs = true;
             },
 
-            getToken() {
+            getToken() : ParseToken {
+                let addAfter;
+                //i cannot set lastUnchangedFragNode to initially start out as null because typescript complains.
+                //so the following line handles the edge case that the very first fragment (at the head of the tree) is actually changed 
+                //but it is stored as lastUnchangedFragNode.
+                //this works because if you claim that you were unchanged, you shouldn't have been marked for removal.
+                if (this.lastUnchangedFragNode == this.itemsToRemove[0]) {
+                    addAfter = null;
+                }else {
+                    addAfter = this.lastUnchangedFragNode;
+                }
                 return {
                     itemsToRemove: this.itemsToRemove,
                     position:this.diffNav.newTextIdx,
                     content: this.diffNav.textCollector,
                     isDirty:this.changeFound,
-                    addAfterNav:this.lastUnchangedFragNode,
+                    addAfterNav:addAfter,
                     diffs:this.diffNav.diffCollector
                 };
             },
@@ -155,28 +176,32 @@ export default class Model {
             }
         }
 
-        while (parseTokenBuilder.getNextFragNode()) {
+        parseLoop:
+        do {
             while(!parseTokenBuilder.diffOverlapping()) {
                 parseTokenBuilder.collectDiff();
+                if (parseTokenBuilder.outOfDiffs) break parseLoop;
             }
             parseTokenBuilder.splitDiff();
             let tokenAtInitialSplit = parseTokenBuilder.getToken();
-            let criticalOverlap = false;
+            parseTokenBuilder.criticalOverlap = false;
             while(!parseTokenBuilder.diffOverflowing()) {
                 if (parseTokenBuilder.currentDiff[0]!==0) {
-                    criticalOverlap = true;
+                    parseTokenBuilder.criticalOverlap = true;
                 }
                 parseTokenBuilder.collectDiff();
+                if (parseTokenBuilder.outOfDiffs) break parseLoop;
             }
             parseTokenBuilder.splitDiff();
 
-            if (!criticalOverlap) {
+            if (!parseTokenBuilder.criticalOverlap) {
                 if (parseTokenBuilder.changeFound) {
                     parseTokenBuilder.submitToken(tokenAtInitialSplit);
                 }
                 parseTokenBuilder.submitToken();
             }
-        }
+        } while(parseTokenBuilder.getNextFragNode());
+        parseTokenBuilder.getNextFragNode();
         parseTokenBuilder.submitToken();
         return parseTokens;
     }
@@ -205,6 +230,8 @@ export default class Model {
 
             for (let item of token.itemsToRemove) {
                 indexOffset -= item.content.length;
+                if (indexOffset<0) indexOffset = 0;
+                console.log(`Removed: ${item.toString()}`);
                 item.removeNode();
             }
             if (token.content==="") {   //nothing to add to the tree
@@ -244,15 +271,17 @@ export default class Model {
         let lastAddedNav:TreeNavigator|null = null;
         let startIdx = token.position;
         const regexp = new RegExp('([\n\r]{2}|^)([^\n\r]+([\n\r]|$))+([\n\r]|(?<=$))','g');
-        const matches = token.content.matchAll(regexp);
-
+        let matches = token.content.matchAll(regexp);
         for (const match of matches) {
             let fragment = new TabFragment(match[0], startIdx+match.index!);
-            if (token.addAfterNav) {
+            if (lastAddedNav) {
+                lastAddedNav = lastAddedNav.addAfter(fragment)
+            }else if (token.addAfterNav) {
                 lastAddedNav = token.addAfterNav.addAfter(fragment)
             }else {
                 lastAddedNav = this.#tree.add(fragment);
             }
+            console.log(`Added: ${fragment.content}`);
         }
         return lastAddedNav;
     }

@@ -24,6 +24,8 @@ export default class TabFragment {
         this.#domRange = EditorUtils.getRange(position, this.length);
     }
 
+    get position() { return this.#position }
+
     get domRange() {
         if (!this.#domRange) this.#domRange = EditorUtils.getRange(this.#position, this.length);
         return this.#domRange;
