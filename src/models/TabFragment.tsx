@@ -1,48 +1,38 @@
 import EditorUtils from '../utils/EditorUtils';
+import TabRange from '../utils/TabRange';
 
 export default class TabFragment {
-    position: number;
-    length: number;
-    content:string;
-    #end:number;
-    range;
+    #position!: number;
+    #content:string;
+    #padding = 0;
+    #range!:TabRange;
+    #domRange!:Range;
 
-    constructor(content:string, position:number) {
+    constructor(content:string, position:number, padding?:number) {
+        this.#content = content;
+        this.#padding = padding || 0;
         this.position = position;
-        this.content = content;
-        this.length = this.content.length;
-        this.#end = this.position+this.length;
-        this.range = EditorUtils.getRange(position, this.length)
     }
 
-    set start(position:number) {
-        this.position = position;
-        this.#end = this.position+this.length;
+    get content() : string { return this.#content }
+
+    get length() { return this.#range.length }
+
+    set position(position:number) {
+        this.#position = position;
+        this.#range = new TabRange(this.#position, this.#position+this.#content.length, this.#padding);
+        this.#domRange = EditorUtils.getRange(position, this.length);
     }
-    get end() { return this.#end }
 
     get domRange() {
-        if (!this.range) this.range = EditorUtils.getRange(this.position, this.length);
-        return this.range;
+        if (!this.#domRange) this.#domRange = EditorUtils.getRange(this.#position, this.length);
+        return this.#domRange;
     }
 
-    compareTo(other:TabFragment|number) {
+    compareTo(other:TabFragment|TabRange|number, padding?:boolean) {
         if (other instanceof TabFragment) {
-            if (this.overlaps(other)) return 0;
-            return this.position-other.position;
+            return this.#range.compareTo(other.#range, padding);
         }
-        if (this.contains(other)) return 0;
-        return this.position-other;
-    }
-
-    overlaps(other:TabFragment) : boolean {
-        
-        return (this.end<=other.end && this.end>other.start) || (this.start>=other.start && this.start<other.end) || this.contains(other) || other.contains(this);
-    }
-    contains(other:TabFragment|number) : boolean {
-        if (other instanceof TabFragment) {
-            return this.contains(other.start) && this.contains(other.end);
-        }
-        return other >= this.position && other <= this.end;
+        return this.#range.compareTo(other, padding);
     }
 }

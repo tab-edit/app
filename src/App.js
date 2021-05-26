@@ -7,6 +7,7 @@ import {Timeout, Interval} from './utils/CallBacks';
 import Model from './models/Model';
 import $ from 'jquery'
 import { tokenToString } from 'typescript';
+import EditorToModelLink from './models/EditorToModelLink';
 
 function App() {
   return (
@@ -27,11 +28,11 @@ function App() {
   );
 }
 
-const model = new Model();
-let doThing = ((model) => () => tst(model))(model);
-function tst(model) {
-  let editor = document.getElementById("editor");
-  if (editor) console.log(model.update(editor.innerText));
+let modelLink = EditorToModelLink.create();
+function doThing(model) {
+  modelLink.kill().finally(() => {
+    modelLink = EditorToModelLink.create(true);
+  });
 }
 
 // function treeSortTest() {

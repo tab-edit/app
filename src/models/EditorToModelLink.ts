@@ -19,26 +19,29 @@ export default class EditorToModelLink {
     }
 
     //static factory method
-    static create() {
+    static create(live?:boolean) {
         if (EditorToModelLink._lastInstance && !EditorToModelLink._lastInstance.#isDead) {
             throw new Error("Only one instance of this class can be created");
         }
-        let newInstance = new EditorToModelLink(secretToken);
+        let newInstance = new EditorToModelLink(secretToken, !!live);
         EditorToModelLink._lastInstance = newInstance;
         return newInstance;
     }
-    constructor(token:Symbol) {
+    constructor(token:Symbol, live:boolean) {
         if (token !== secretToken) {
             throw new Error('Constructor is private');
         }
         this.#isDead = false;
         this.model = new Model();
         this.unCache();
+        this.live = live;
     }
     
-    kill() {
+    async kill() {
+        this.live = false;
         this.#isDead = true;
-        this.#detachEventListener();
+        let killPromise = this.killUpdateProcess();
+        return killPromise;
     }
 
     //set and get if the update happens live (whenever the editor content changes)
@@ -46,16 +49,23 @@ export default class EditorToModelLink {
     get live() { return this.#live }
     set live(bool:boolean) {
         this.#live = bool;
-        if (!this.#live) this.#detachEventListener();
-        else this.#attachEventListener()
+        if (!this.#live) this.detachEventListener(secretToken);
+        else this.attachEventListener(secretToken)
     }
 
-    #attachEventListener = (() => {
-        this.editor.oninput = this.updateState;
-    }).bind(this);
-    #detachEventListener = (() => {
-        this.editor.oninput = null;
-    }).bind(this);
+    attachEventListener (token:Symbol) {
+        if (token !== secretToken) {
+            throw new Error('This method is private');
+        }
+        this.editor.oninput = (() => this.updateState()).bind(this);
+    }
+    detachEventListener (token:Symbol) {
+        if (token !== secretToken) {
+            throw new Error('This method is private');
+        }
+        let editor = this.editor;
+        if (editor) this.editor.oninput = null;
+    }
     
     async updateState() {
         if (this.#isDead) throw new Error("This class instance has been killed and cannot be used any longer");
@@ -78,13 +88,14 @@ export default class EditorToModelLink {
     }
 
     async unCache() {
-        this.#detachEventListener();
+        this.live = false;
         try {
             await this.killUpdateProcess();
             this.model.uncache();
         }catch (e) {
             throw new Error(`Cound not uncache editor object model.\nReason:\n${e.message}`);
         }
+        this.live = true;
     }
 
 }

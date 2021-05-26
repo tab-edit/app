@@ -232,7 +232,6 @@ class TreeNode {
     _setNavigator(token:Symbol, navigator:TreeNavigator) {
         if (token===secretToken) this.#navigator = navigator;
         else throw new Error('Method is private');
-        
     }
 
     setLeft(node:TreeNode|null|undefined) {
@@ -290,9 +289,9 @@ export class TreeNavigator {
         else this.#node = node;
     }
 
-    addAfter(fragment:TabFragment) {
+    addAfter(fragment:TabFragment) : TreeNavigator|null {
         if (!this.#node) throw new Error("Cannot operate on a node which no longer belongs to its tree");
-        this.#tree.addFrom(this.#node, fragment)
+        return this.#tree.addFrom(this.#node, fragment)
     }
 
     removeNode() {
@@ -315,10 +314,25 @@ export class TreeNavigator {
     }
 
     next() : TreeNavigator|null {
-        if (!this.#node) throw new Error("Cannot operate on a node which no longer belongs to its tree");
-        if (!this.#node.right) return this.#node.parent ? this.#node.parent.navigator : null;
+        if (!this.#node) throw new Error("Cannot navigate a node which no longer belongs to its tree");
+        if (!this.#node.right) {
+            let parentNav = this.#node.parent?.navigator;
+            if (!parentNav) return null;
+            return parentNav.#nextIgnore(this);
+        }
         let current = this.#node.right;
         while (current.left) current = current.left;
         return current.navigator;
+    }
+    #nextIgnore = (nav:TreeNavigator) : TreeNavigator|null=> {
+        if (!this.#node) throw new Error("Cannot navigate a node which no longer belongs to its tree");
+        let next = this.next();
+        if (!next) return null;
+        if (nav===next) {
+            let parentNav = this.#node.parent?.navigator;
+            if (!parentNav) return null;
+            return parentNav.#nextIgnore(this);
+        }
+        return next;
     }
 }
