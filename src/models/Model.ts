@@ -234,6 +234,7 @@ export default class Model {
             while(!parseTokenBuilder.diffOverflowing()) {
                 parseTokenBuilder.collectDiff();
                 if (parseTokenBuilder.outOfDiffs) {
+                    parseTokenBuilder.restoreExtractedToken(savedTokenState);
                     parseTokenBuilder.getNextFragNode();
                     break outerLoop;    //maybe change to continue instead of break. not sure
                 }

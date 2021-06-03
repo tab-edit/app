@@ -30,7 +30,7 @@ export default class TabRange {
     compareTo(other:TabRange|number, withPadding?:boolean) {
         let myStart = withPadding ? this.#startPad : this.#start;
         if (other instanceof TabRange) {
-            let otherStart = withPadding ? other.#startPad : other.#start;
+            let otherStart = other.#start;
             if (this.overlaps(other, true)) return 0;
             return myStart-otherStart;
         }
@@ -41,14 +41,14 @@ export default class TabRange {
     overlaps(other:TabRange, withPadding?:boolean) : boolean {
         let myStart = withPadding ? this.#startPad : this.#start;
         let myEnd = withPadding ? this.#endPad : this.#end;
-        let otherStart = withPadding ? other.#startPad : other.#start;
-        let otherEnd = withPadding ? other.#endPad : other.#end;
+        let otherStart = other.#start;
+        let otherEnd = other.#end;
         return (myEnd<=otherEnd && myEnd>otherStart) || (myStart>=otherStart && myStart<otherEnd) || this.contains(other, withPadding) || other.contains(this, withPadding);
     }
     contains(other:TabRange|number, withPadding?:boolean) : boolean {
         if (other instanceof TabRange) {
-            let otherStart = withPadding ? other.#startPad : other.#start;
-            let otherEnd = withPadding ? other.#endPad : other.#end;
+            let otherStart = other.#start;
+            let otherEnd = other.#end;
             return this.contains(otherStart, withPadding) && this.contains(otherEnd, withPadding);
         }
         let myStart = withPadding ? this.#startPad : this.#start;

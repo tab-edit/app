@@ -15,6 +15,7 @@ export default class TabFragment {
         this.#padding = padding || 0;
         this.#position = position;
         this.#range = new TabRange(this.#position, this.#position+this.#content.length, this.getPadUp(), this.getPadDown());
+        console.log("djdj");
         //this.#domRange = EditorUtils.getRange(position, this.length);
     }
 
@@ -25,28 +26,28 @@ export default class TabFragment {
 
     getPadUp() {
         let stringAbove = this.#originText.substring(0, this.#position);
-        let match = stringAbove.match(/\n *\n$/);
-        if (match) {
-            return this.#position-match.index!;
+        let match1 = stringAbove.match(/\n *\n$/);
+        if (match1) {
+            return this.#position-match1.index!;
         }
-        let match2 = stringAbove.match(/^( *\n)?/);
+        let match2 = stringAbove.match(/^( *\n)?$/);    // a tab fragment should only ever NOT have two newlines before it (match1) when it is at the start of the string.
         if (!match2) {
             throw new Error("This tab fragment was not created properly. There might be a problem with the regex for selecting this fragment because the spacing before this tab fragment is not as expected.");
         }
-        return this.#position-match2.index!+2; //plus 2 because we still do not have the full two newlines that is expected, so if something is added before this fragment, it is bound to overlap (match.index is the start of the string. adding two makes sure that the padding is big enough that adding anything before will definitely overlap).
+        return match2[0].length! + 2; //plus 2 because we still do not have the full two newlines that is expected, so if something is added before this fragment, it is bound to overlap (match.index is the start of the string. adding two makes sure that the padding is big enough that adding anything before will definitely overlap).
     }
 
     getPadDown() {
         let stringBelow = this.#originText.substring(this.#position+this.innerLength);
         let match = stringBelow.match(/^\n *\n/);
         if (match) {
-            return (match.index!+match[0].length!) - this.#position;
+            return match[0].length;
         }
-        let match2 = stringBelow.match(/(\n *)?$/);
+        let match2 = stringBelow.match(/^(\n *)?$/);        // a tab fragment should only ever NOT have two newlines after it (match1) when it is at the end of the string.
         if (!match2) {
             throw new Error("This tab fragment was not created properly. There might be a problem with the regex for selecting this fragment because the spacing after this tab fragment is not as expected.");
         }
-        return (match2.index!+match2[0].length!) - this.#position +2; //plus 2 because we still do not have the full two newlines that is expected, so if something is added after this fragment, it is bound to overlap (the match's end index is the end of the string. adding two makes sure that the padding is big enough that adding anything after will definitely overlap).
+        return match2[0].length! + 2; //plus 2 because we still do not have the full two newlines that is expected, so if something is added after this fragment, it is bound to overlap (the match's end index is the end of the string. adding two makes sure that the padding is big enough that adding anything after will definitely overlap).
     }
 
     get position() { return this.#position }
@@ -61,10 +62,10 @@ export default class TabFragment {
         return this.#domRange;
     }
 
-    compareTo(other:TabFragment|TabRange|number, padding?:boolean) {
+    compareTo(other:TabFragment|TabRange|number, withPadding?:boolean) {
         if (other instanceof TabFragment) {
-            return this.#range.compareTo(other.#range, padding);
+            return this.#range.compareTo(other.#range, withPadding);
         }
-        return this.#range.compareTo(other, padding);
+        return this.#range.compareTo(other, withPadding);
     }
 }

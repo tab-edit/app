@@ -42,7 +42,7 @@ export default class TabTree {
     addFrom(subtreeRoot:TreeNode, fragment:TabFragment) : TreeNavigator|null {
         let nearestNode = this.searchNearestNode(subtreeRoot, fragment);
         let newNode = new TreeNode(this, fragment, nearestNode);
-        let comp = newNode.compareTo(nearestNode);
+        let comp = newNode.compareTo(nearestNode, true);
         if (comp===0) return null;
         else if (comp<0) nearestNode.setLeft(newNode);
         else nearestNode.setRight(newNode);
@@ -68,9 +68,8 @@ export default class TabTree {
         node.navigator._nullify(secretToken);
 
         //make sure that the navigator for the node whose content we used as a replacement now navigates from this node
-        //(i.e make sure that )
-        detachedNode.navigator._setNode(secretToken, node);
         node._setNavigator(secretToken, detachedNode.navigator);
+        node.navigator._setNode(secretToken, node);
 
         return true;
     }
@@ -275,11 +274,11 @@ class TreeNode {
 			currentNode.parent.balFac = (currentNode.parent.left===null ? 0 : currentNode.parent.left.#height) - (currentNode.parent.right===null ? 0 : currentNode.parent.right.#height);
     }
 
-    compareTo(node:TreeNode|TabFragment) : number { 
-        return this.content.compareTo(node instanceof TreeNode ? node.content : node);
+    compareTo(node:TreeNode|TabFragment, withPadding?:boolean) : number { 
+        return this.content.compareTo(node instanceof TreeNode ? node.content : node, withPadding);
     }
-    static compare(item1:TreeNode|TabFragment, item2:TreeNode|TabFragment) : number {
-        return item1.compareTo(item2 instanceof TreeNode ? item2.content : item2);
+    static compare(item1:TreeNode|TabFragment, item2:TreeNode|TabFragment, withPadding?:boolean) : number {
+        return item1.compareTo(item2 instanceof TreeNode ? item2.content : item2, withPadding);
     }
 
     toString() {
