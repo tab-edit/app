@@ -30,6 +30,15 @@ export default class TabTree {
         return arr;
     }
 
+    inOrderArray(node:TreeNode|null) : string[] {
+        if (!node) return [];
+        let arr:string[] = [];
+        arr.concat(this.inOrderArray(node.left));
+        arr.push(node.content.content);
+        arr.concat(this.inOrderArray(node.right));
+        return arr;
+	}
+
     addFrom(subtreeRoot:TreeNode, fragment:TabFragment) : TreeNavigator|null {
         let nearestNode = this.searchNearestNode(subtreeRoot, fragment);
         let newNode = new TreeNode(this, fragment, nearestNode);
@@ -313,27 +322,20 @@ export class TreeNavigator {
         return this.#node.content 
     }
 
-    next() : TreeNavigator|null {
+    next(ignoreMe?:TreeNode) : TreeNavigator|null {
+        console.log("in next");
         if (!this.#node) throw new Error("Cannot navigate a node which no longer belongs to its tree");
         if (!this.#node.right) {
             let parentNav = this.#node.parent?.navigator;
             if (!parentNav) return null;
-            return parentNav.#nextIgnore(this);
+            return parentNav.next(this.#node);
         }
         let current = this.#node.right;
+        if (current===ignoreMe) {
+            return this.#node.parent?.navigator.next(this.#node) || null;
+        }
         while (current.left) current = current.left;
         return current.navigator;
-    }
-    #nextIgnore = (nav:TreeNavigator) : TreeNavigator|null=> {
-        if (!this.#node) throw new Error("Cannot navigate a node which no longer belongs to its tree");
-        let next = this.next();
-        if (!next) return null;
-        if (nav===next) {
-            let parentNav = this.#node.parent?.navigator;
-            if (!parentNav) return null;
-            return parentNav.#nextIgnore(this);
-        }
-        return next;
     }
 
     toString() { return this.#node?.toString() || "" }

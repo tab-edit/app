@@ -95,8 +95,24 @@ export default class EditorUtils {
         return this.getTextFrom(this.editor);
     }
     static getTextFrom(node:Node) : string {
-        let tmp:any = node;
-        return tmp.innerText || tmp.textContent;
+        let element:any = node;
+        let html:string = element.innerHTML;
+        let initialTextMatch = html.match("^[^<]*");
+        let initialText = initialTextMatch ? initialTextMatch[0] : ""
+        let remainingHTML = initialTextMatch ? html.substring(initialTextMatch.index!+initialText.length, html.length) : html;
+        if (remainingHTML) initialText += '\n';
+        let text = initialText + remainingHTML;
+        text = EditorUtils.htmlDecode(text);
+        if (remainingHTML) text = text.substring(0, text.length-1);
+        return text.substring(0, text.length);
     }
 
+    // static htmlEncode(text:string){
+    //     return $('<div/>').text(text).html();
+    // }
+    
+    static htmlDecode(html:string){
+        html = html.replace(/<\/div>/ig, '\n');
+        return $('<div/>').html(html).text();
+    }
 }

@@ -57,7 +57,7 @@ export default class EditorToModelLink {
         if (token !== secretToken) {
             throw new Error('This method is private');
         }
-        this.editor.oninput = (() => this.updateState()).bind(this);
+        //this.editor.oninput = (() => this.updateState()).bind(this);
     }
     detachEventListener (token:Symbol) {
         if (token !== secretToken) {
@@ -71,14 +71,14 @@ export default class EditorToModelLink {
         if (this.#isDead) throw new Error("This class instance has been killed and cannot be used any longer");
         let delayEnd = performance.now()+this.model.updateInterval;
         while(performance.now()<delayEnd) {}
-        return this.model.update(EditorUtils.getText());
+        return null;//this.model.update(EditorUtils.getText());
     }
 
     async killUpdateProcess() {
         this.#currentProcessKillPromise?.cancel();   //stop any .then() that comes from the previous attempt to kill the update process
         this.#currentProcessKillPromise = new CancelablePromise(
             (async function repeatKillAttempt(instance:EditorToModelLink) {
-                instance.model.interrupt()
+                instance.model.update("")
                 let killTimeout = performance.now()+EditorToModelLink.processKillTimeout;
                 while (instance.model.isActive && performance.now()<killTimeout) {}
                 if (instance.model.isActive) throw new Error("Attempt to stop the current running update process timed out");

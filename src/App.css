@@ -1,30 +1,11 @@
 #editor {
-  width: 500px;
+  width: 95%;
   height: 300px;
-  border: 2px solid black;
   white-space: pre-wrap; /*change to pre so that it doesn't wrap*/
   overflow: scroll;
-}
-
-#dummy {
-  width: 20px;
-  height: 20px;
-  background-color: blue;
-}
-
-#index-field {
-  width: 40px;
-  border: 2px, solid, black;
-}
-
-.the-wrap {
-  background-color: green;
-}
-
-#displayn {
-  width: 300px;
-  height: 300px;
-  border-width: 5px;
-  border-color: purple;
-  /* background-color: green; */
+  outline-color: #dfdfdf;
+  padding: 5px;
+  margin: 5px;
+  white-space: pre-wrap;
+  overflow: scroll;
 }
