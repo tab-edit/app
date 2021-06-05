@@ -57,11 +57,13 @@ export default class Model {
         if (!navigator) {   //the TabTree is empty. our model has nothing
             return [{
                 itemsToRemove: [],
-                position:0,
-                content: this.#newText,
-                isDirty:true,
-                addAfterNav:null,
-                diffs:[]
+                position:      0,
+                oldPosition:   0,
+                content:       this.#newText,
+                oldContent:    this.#textState,
+                isDirty:       true,
+                diffs:         [],
+                addAfter:      null
             }]
         }
 
@@ -75,10 +77,12 @@ export default class Model {
             oldTextIdx:  0,
             newTextIdx:  0,
             textCollector: "",
+            oldTextCollector: "",
             diffCollector:emptyDiffArr,
             next(customNext?:Diff) : boolean {
                 this.diffCollector.push(this.curr);
                 this.textCollector += this.curr[0]>=0 ? this.curr[1] : "";
+                this.oldTextCollector += this.curr[0]<=0 ? this.curr[1] : "";
                 this.oldTextIdx += this.curr[0]<=0 ? this.curr[1].length : 0;
                 this.newTextIdx += this.curr[0]>=0 ? this.curr[1].length : 0;
                 this.curr = customNext || textDiffs[++this.currDiffIxd];
@@ -101,6 +105,7 @@ export default class Model {
             emptyCollectors() {
                 this.diffCollector = [];
                 this.textCollector = "";
+                this.oldTextCollector = "";
             },
             overlaps(treeNodeNav:TreeNavigator) : boolean {
                 //since we are performing operations based on the old text, an addition never covers a range of the original text. An addition is always made on a single point.
@@ -110,6 +115,7 @@ export default class Model {
                 return treeNodeNav.content.compareTo(range, true)===0;
             },
             overflows(treeNodeNav:TreeNavigator) : boolean {
+                if (!this.curr) return true;    //in this case, you are at the end. no more diffs.  this means it always is defined as overflowing because it comes after the treeNodeNav
                 let overlaps = this.overlaps(treeNodeNav);
                 //since we are performing operations based on the old text, an addition never covers a range of the original text.
                 //An addition is always made on a single point. so it can never be partially within the treeNodeNav and partially outside
@@ -132,6 +138,7 @@ export default class Model {
             overlapping:      false,
             criticalOverlap:  false,
             currentPosition:  0,
+            oldTextPosition: 0,
 
             get currentDiff() { return this.diffNav.curr; },
 
@@ -155,6 +162,7 @@ export default class Model {
             },
             
             splitDiff(splitAtFragEnd?:boolean) {
+                if (!this.diffNav.curr) return;
                 let fragSplitPosition = this.currentFragNode.content.position;
                 if (splitAtFragEnd) {
                     fragSplitPosition += this.currentFragNode.content.length;
@@ -181,29 +189,36 @@ export default class Model {
                 let tokenState =  {
                     itemsToRemove: this.itemsToRemove,
                     position:this.currentPosition,
-                    content: this.diffNav.textCollector,
+                    oldPosition:this.oldTextPosition,
+                    content:this.diffNav.textCollector,
+                    oldContent: this.diffNav.oldTextCollector,
                     isDirty:this.changeFound,
-                    addAfterNav:addAfter,
-                    diffs:this.diffNav.diffCollector
+                    diffs:this.diffNav.diffCollector,
+                    addAfter:addAfter,
                 };
                 this.currentPosition += tokenState.content.length;
+                this.oldTextPosition += tokenState.oldContent.length;
                 this.diffNav.emptyCollectors();
+                this.itemsToRemove = [];
                 return tokenState;
             },
 
             restoreExtractedToken(tokenState:ParseToken) {
                 this.currentPosition -= tokenState.content.length;
+                this.oldTextPosition -= tokenState.oldContent.length;
                 this.diffNav.textCollector = tokenState.content + this.diffNav.textCollector;
+                this.diffNav.oldTextCollector = tokenState.oldContent + this.diffNav.oldTextCollector;
                 this.diffNav.diffCollector = [...tokenState.diffs,...this.diffNav.diffCollector];
+                this.itemsToRemove = [...tokenState.itemsToRemove, ...this.itemsToRemove]
             },
             
             submitToken(customToken?:ParseToken) : boolean {
                 let token = customToken || this.extractTokenState();
                 parseTokens.push(token);
+                
+                this.changeFound = false;
                 if (customToken) return true;
 
-                this.changeFound = false;
-                this.itemsToRemove = [];
                 this.lastUnchangedFragNode = this.currentFragNode;
                 return true;
             },
@@ -217,15 +232,11 @@ export default class Model {
             }
         }
 
-        outerLoop:
         do {
             parseTokenBuilder.resetOverlapFlag(false);
             while(!parseTokenBuilder.diffOverlapping()) {
                 parseTokenBuilder.collectDiff();
-                if (parseTokenBuilder.outOfDiffs) {
-                    parseTokenBuilder.getNextFragNode();
-                    break outerLoop;    //maybe change to continue instead of break. not sure
-                }
+                if (parseTokenBuilder.outOfDiffs) break;
             }
             parseTokenBuilder.resetOverlapFlag(true);
 
@@ -233,11 +244,7 @@ export default class Model {
             let savedTokenState = parseTokenBuilder.extractTokenState();
             while(!parseTokenBuilder.diffOverflowing()) {
                 parseTokenBuilder.collectDiff();
-                if (parseTokenBuilder.outOfDiffs) {
-                    parseTokenBuilder.restoreExtractedToken(savedTokenState);
-                    parseTokenBuilder.getNextFragNode();
-                    break outerLoop;    //maybe change to continue instead of break. not sure
-                }
+                if (parseTokenBuilder.outOfDiffs) break;
             }
             parseTokenBuilder.splitDiff(true);
 
@@ -260,16 +267,9 @@ export default class Model {
     parse(originText:string, tokens:ParseToken[]) : {textState:string, parsedTokens:ParseToken[]} {
         let parsedTokens:ParseToken[] = [];
 
-        let prevToken:ParseToken = {
-            itemsToRemove: [],
-            position: 0,
-            content: "",
-            isDirty:false,
-            addAfterNav: null,
-            diffs: []
-        };
-        let lastIdxUpdatedNav:TreeNavigator|null = prevToken.addAfterNav || this.#tree.navigator;
-        let lastAddedNav:TreeNavigator|null;
+        let lastAddedNode:TreeNavigator|null = null;
+        let lastIdxUpdatedNode:TreeNavigator|null = null;
+
         let textState = "";
         let indexOffset = 0;
 
@@ -277,12 +277,15 @@ export default class Model {
         for (let i=0; i<tokens.length; i++) {
             token = tokens[i];
             textState += token.content;
+            if (lastAddedNode && token.addAfter) {
+                lastIdxUpdatedNode = lastAddedNode.content.position>token.addAfter.content.position ? lastAddedNode : token.addAfter;
+            }else {
+                lastIdxUpdatedNode = lastAddedNode || token.addAfter;
+            }
             if (this.#interruptFlag || !token.isDirty) continue;
 
+            indexOffset += token.content.length-token.oldContent.length;
             for (let item of token.itemsToRemove) {
-                indexOffset -= item.content.length;
-                if (indexOffset<0) indexOffset = 0;
-                //console.log(`Removed: ${item.toString()}`);
                 item.removeNode();
             }
             if (token.content==="") {   //nothing to add to the tree
@@ -292,51 +295,52 @@ export default class Model {
 
             //--------if token is undefined (end of document) or we are adding items to the tree, update the indices of the whole tree starting from the last unupdated point.
 
-            this.offsetTreeIdx(indexOffset, lastIdxUpdatedNav?.next());
+            this.offsetTreeIdx(indexOffset, token.position, lastIdxUpdatedNode?.next()||null);
             indexOffset = 0;
-            lastAddedNav = this.parseAndAddFragments(originText, token)
-            if (lastAddedNav) {
+            lastAddedNode = this.parseAndAddFragments(originText, token, lastIdxUpdatedNode);
+            if (!!lastAddedNode) {
                 parsedTokens.push(token);
-                lastIdxUpdatedNav = lastAddedNav;
             }
-            indexOffset += token.content.length;
-            prevToken = token;
         }
-        let offsetFrom = lastIdxUpdatedNav?.next();
-        if (offsetFrom) this.offsetTreeIdx(indexOffset, offsetFrom);
+        if (token) {
+            this.offsetTreeIdx(indexOffset, token.position, lastIdxUpdatedNode?.next()||null);
+        }
 
         this.#interruptFlag = false;
 
         return {textState:textState, parsedTokens:parsedTokens}
     }
 
-    offsetTreeIdx(offset:number, startNav:TreeNavigator|null|undefined) {
-        let nav = startNav || this.#tree.navigator;
+    offsetTreeIdx(offset:number, afterIndex:number, startNav:TreeNavigator|null) {
+        if (!startNav || !offset) return;
+        let nav:TreeNavigator|null = startNav;
         while (nav) {
-            nav.content.position+=offset;
+            if (nav.content.position>afterIndex) {
+                nav.content.position+=offset;
+                if (nav.content.position<0) nav.content.position = 0;
+            }
             nav = nav.next();
         }
     }
 
-    parseAndAddFragments(originText:string, token:ParseToken) : TreeNavigator|null {
-        let lastAddedNav:TreeNavigator|null = null;
+    parseAndAddFragments(originText:string, token:ParseToken, addAfterMe?:TreeNavigator|null) : TreeNavigator|null {
         let startIdx = token.position;
         const regexp = /(?<=(\n *\n)|(^( *\n)?))(( *\S)+ *\n)*(( *\S)+ *)(?=(\n *\n)|((\n *)?$))/g;
         let matches = token.content.matchAll(regexp);
-        
+
+        let lastAddedNode:TreeNavigator|null = null;
         for (const match of matches) {
             let fragment = new TabFragment(originText, match[0], startIdx+match.index!);
             //console.log(`want to add:\n${fragment.content}`);
-            if (lastAddedNav) {
-                lastAddedNav = lastAddedNav.addAfter(fragment)
-            }else if (token.addAfterNav) {
-                lastAddedNav = token.addAfterNav.addAfter(fragment)
+            if (!!lastAddedNode) {
+                lastAddedNode = lastAddedNode.addAfter(fragment)
+            }else if (addAfterMe) {
+                lastAddedNode = addAfterMe.addAfter(fragment)
             }else {
-                lastAddedNav = this.#tree.add(fragment);
+                lastAddedNode = this.#tree.add(fragment);
             }
-            //console.log(`Added: ${fragment.content}`);
         }
-        return lastAddedNav;
+        return lastAddedNode;
     }
 
     uncache() {
@@ -348,8 +352,10 @@ export default class Model {
 type ParseToken = {
     itemsToRemove:TreeNavigator[]
     position:number
+    oldPosition:number
     content:string
+    oldContent:string
     isDirty:boolean
-    addAfterNav:TreeNavigator|null
     diffs:Diff[]
+    addAfter:TreeNavigator|null
 }
