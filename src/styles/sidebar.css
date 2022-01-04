@@ -1,0 +1,29 @@
+
+.split {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-left: var(--border-style);
+    border-right: var(--border-style);
+}
+
+.sidebar-item {
+    cursor: pointer;
+    margin: 0;
+    border: none;
+    padding: var(--padding-small);
+}
+.sb-right {
+    writing-mode: vertical-rl;
+    text-orientation: sideways;
+}
+
+.sidebar-item:hover {
+    background-color: var(--border-color);
+}

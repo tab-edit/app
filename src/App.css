@@ -1,11 +1,31 @@
-#editor {
-  width: 95%;
-  height: 300px;
-  white-space: pre-wrap; /*change to pre so that it doesn't wrap*/
-  overflow: scroll;
-  outline-color: #dfdfdf;
-  padding: 5px;
-  margin: 5px;
-  white-space: pre-wrap;
-  overflow: scroll;
+:root {
+    --bg-color: #0A1929;
+    --padding-small: 0.4rem;
+    --padding-medium: 0.6rem;
+    --border-color: #091424;/* #07121f; */
+    --split-gutter-color: #091627;
+    --slim-div-size: 2rem;
+    --border-size: 2px;
+    --border-style: solid var(--border-size) var(--border-color);
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    height: 100vh;
+    max-height: 100vh;
+}
+
+#app-center {
+    flex-grow: 1;
+    display: flex;
+}
+
+#menu-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--padding-small);
+    border: var(--border-style);
 }
