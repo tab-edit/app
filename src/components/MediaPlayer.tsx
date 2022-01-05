@@ -20,7 +20,7 @@ function MediaPlayer(props:any) {
     return (
         <div id="media-player">
             <IconButton onClick={() => dispatch(togglePlayState())} >
-                { state.status==='playing' ? <PlayIcon color="primary"/> : <PauseIcon color="primary"/> }
+                { state.status==='playing' ? <PauseIcon color="primary"/> : <PlayIcon color="primary"/> }
             </IconButton>
 
             <Slider
