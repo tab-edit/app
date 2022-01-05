@@ -1,14 +1,13 @@
-import React, {useState} from 'react';
-import TouchAppIcon from '@mui/icons-material/TouchApp';
-import '../styles/media-player.css'
-import IconButton from '@mui/material/IconButton';
+import { MyLocation } from '@mui/icons-material';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayIcon from '@mui/icons-material/PlayArrow';
-import { Slider, InputLabel, OutlinedInput, InputAdornment, Button } from '@mui/material';
-import { MyLocation } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
+import TouchAppIcon from '@mui/icons-material/TouchApp';
+import { Slider } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { resolveMediaSeeking, setSliderPosition, togglePlayState, toggleSelector } from '../state/slices/mediaPlayerSlice';
+import '../styles/media-player.css';
 
 function handleSeekMeasure() {
     //update measure location, then update slider location

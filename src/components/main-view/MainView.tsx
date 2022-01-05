@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
-import Split from 'react-split';
-import { useAppDispatch, useAppSelector } from '../../state/hooks';
-import Editor from './editor/Editor';
+import Splitter from '@devbookhq/splitter';
+import React from 'react';
+import { useAppSelector } from '../../state/hooks';
 import '../../styles/main-view.css';
-import { toggleSidebar } from '../../state/slices/sidebarSlice';
-import Sidebar from '../sidebars/Sidebar';
 import { sidebarItems } from '../sidebars/sidebar-items/index';
-import Splitter, { SplitDirection } from '@devbookhq/splitter';
+import Editor from './editor/Editor';
 
 function MainView(props:any) {
     const viewState = useAppSelector((state) => state.view);
@@ -26,11 +23,6 @@ function MainView(props:any) {
             </Splitter>
         </div>
     )
-}
-
-function getElementWidth(className:string) {
-    const box:any = document.querySelector(`.${className.replace(/^\./g, '')}`)!
-    return box.offsetWidth || 0;
 }
 
 export default MainView;

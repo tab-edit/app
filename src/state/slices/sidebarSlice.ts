@@ -17,7 +17,7 @@ const initialState = {
     rightSidebarView: ''
 }
 
-export const viewSlice = createSlice({
+export const sidebarSlice = createSlice({
     name: 'view',
     initialState,
     reducers: {
@@ -29,7 +29,7 @@ export const viewSlice = createSlice({
         },
         setSidebarView: (state, action: PayloadAction<string>) => {
             const item = sidebarItems[action.payload];
-            if (item.position=='left')
+            if (item.position==='left')
                 state.leftSidebarView = action.payload;
             else
                 state.rightSidebarView = action.payload;
@@ -37,7 +37,7 @@ export const viewSlice = createSlice({
     }
 });
 
-export const { toggleSidebar, setSidebarView } = viewSlice.actions;
+export const { toggleSidebar, setSidebarView } = sidebarSlice.actions;
 
 export const sidebarItemClicked = (name: string): AppThunk => (dispatch, getState) => {
     const item = sidebarItems[name];
@@ -48,4 +48,4 @@ export const sidebarItemClicked = (name: string): AppThunk => (dispatch, getStat
     dispatch(setSidebarView(name));
 };
 
-export default viewSlice.reducer;
+export default sidebarSlice.reducer;
