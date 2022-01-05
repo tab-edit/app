@@ -1,3 +1,5 @@
+You can see a live preview of the app [here](https://tab-edit.vercel.app/)
+
 A large scale personal project re-envisioning a previous personal project ([TAB2XML](https://github.com/Stan15/TAB2XML)) with modern web tools.
 This project has dependencies on [3 other ongoing projects](https://github.com/Stan15?tab=projects) which I am actively developing as part of this effort.
 All together, the system parses, lints, plays and converts free-form ascii music tablature notation into the MusicXML format.
