@@ -1,20 +1,25 @@
-import { StickyNote2 } from "@mui/icons-material"
+import { GitHub, StickyNote2 } from "@mui/icons-material"
 import SheetView from './SheetView'
 
 type SidebarItem = {
     icon: JSX.Element,
     position: 'left' | 'right',
-    view: JSX.Element
+    align?: 'top' | 'bottom',
+    view?: JSX.Element,
+    effect?: () => void,
 }
 export const sidebarItems:{[name:string]: SidebarItem} = {
     "Sheet View": {
         position: 'right',
         icon: <StickyNote2 />,
-        view: () => <SheetView />
+        view: <SheetView />
     },
-    "Sheet View2": {
+    "Github3": {
         position: 'left',
-        icon: <StickyNote2 />,
-        view: () => <SheetView />
+        align: 'bottom',
+        icon: <GitHub />,
+        effect: () => {
+
+        }
     }
 }

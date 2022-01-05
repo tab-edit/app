@@ -19,11 +19,19 @@
     border: none;
     padding: var(--padding-small);
 }
-.sb-right {
+.sb-item-right {
     writing-mode: vertical-rl;
     text-orientation: sideways;
 }
 
 .sidebar-item:hover {
     background-color: var(--border-color);
+}
+
+.sb-top {
+    flex-grow: 1;
+}
+
+.sb-bottom {
+    align-items: flex-end;
 }
