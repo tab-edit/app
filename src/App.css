@@ -1,32 +1,32 @@
 :root {
-    --bg-color: #0A1929;
-    --padding-small: 0.4rem;
-    --padding-medium: 0.6rem;
-    --border-color: #091424;/* #07121f; */
-    --split-gutter-color: #091627;
-    --slim-div-size: 2rem;
-    --border-size: 2px;
-    --primary-color: #798288;
-    --secondary-color: #898989;
-    --border-style: solid var(--border-size) var(--border-color);
+  --bg-color: #0A1929;
+  --padding-small: 0.4rem;
+  --padding-medium: 0.6rem;
+  --border-color: #091424;/* #07121f; */
+  --split-gutter-color: #091627;
+  --slim-div-size: 2rem;
+  --border-size: 2px;
+  --primary-color: #798288;
+  --secondary-color: #898989;
+  --border-style: solid var(--border-size) var(--border-color);
 }
 
 .App {
-    display: grid;
-    grid-template-rows: max-content 1fr max-content;
-    grid-template-columns: max-content 1fr max-content;
-    grid-template-areas: 
-        "header         header   header"
-        "sidebar-left   main     sidebar-right"
-        "footer         footer   footer";
-    height: 100vh;
-    max-height: 100vh;
-    color: var(--primary-color);
-    background-color: var(--bg-color);
+  display: grid;
+  grid-template-rows: max-content 1fr max-content;
+  grid-template-columns: max-content 1fr max-content;
+  grid-template-areas: 
+      "header         header   header"
+      "sidebar-left   main     sidebar-right"
+      "footer         footer   footer";
+  height: 100vh;
+  max-height: 100vh;
+  color: var(--primary-color);
+  background-color: var(--bg-color);
 }
 
 .App>div {
-    border: var(--border-style) !important;
+  border: var(--border-style) !important;
 }
 
 

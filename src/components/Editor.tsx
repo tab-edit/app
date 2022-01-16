@@ -1,7 +1,7 @@
 import { basicSetup, EditorView } from '@codemirror/basic-setup';
 import React, { useEffect, useRef } from 'react';
 import { EditorState, Compartment } from '@codemirror/state';
-// import { tablature } from 'lang-tablature';
+import { tablature } from 'lang-tablature';
 import './editor.css';
 
 function Editor(props:any) {
@@ -12,8 +12,8 @@ function Editor(props:any) {
         const state = EditorState.create({
             doc: "hello! ",
             extensions: [
-                basicSetup
-                // language.of(tablature())
+                basicSetup,
+                language.of(tablature())
             ]
         });
         const view = new EditorView({
