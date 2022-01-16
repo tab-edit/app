@@ -14,12 +14,12 @@ export const sidebarItems:{[name:string]: SidebarItem} = {
         icon: <StickyNote2 />,
         view: <SheetView />
     },
-    "Github3": {
+    "Github": {
         position: 'left',
         align: 'bottom',
         icon: <GitHub />,
         effect: () => {
-
+            console.log("Github clicked!");
         }
     }
 }

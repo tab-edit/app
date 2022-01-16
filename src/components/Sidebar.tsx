@@ -1,11 +1,11 @@
 import { Divider } from '@mui/material';
 import React from 'react';
-import { useAppDispatch } from '../../state/hooks';
-import { sidebarItemClicked } from '../../state/slices/sidebarSlice';
-import '../../styles/sidebar.css';
+import { useAppDispatch } from '../state/hooks';
+import { sidebarItemClicked } from '../state/slices/sidebarSlice';
+import './sidebar.css';
 import { sidebarItems } from './sidebar-items';
 
-function Sidebar(props:{position:'left'|'right'}) {
+function Sidebar(props:{position:'left'|'right', className?:string}) {
     const dispatch = useAppDispatch();
 
     const sbItemsTopJSX:JSX.Element[] = [];
@@ -23,7 +23,7 @@ function Sidebar(props:{position:'left'|'right'}) {
         )
     }
     return (
-        <div className='sidebar'>
+        <div className={'sidebar ' + (props.className || '')}>
             <div className='sb-top'>{sbItemsTopJSX}</div>
             <Divider />
             <div className='sb-bottom'>{sbItemsBottomJSX}</div>

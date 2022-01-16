@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { sidebarItems } from '../../components/sidebars/sidebar-items/index';
+import { sidebarItems } from '../../components/sidebar-items/index';
 import { AppThunk } from "../store";
 
 type SidebarPosition = 'left' | 'right';

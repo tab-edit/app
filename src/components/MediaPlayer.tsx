@@ -3,11 +3,11 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import { Slider } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { resolveMediaSeeking, setSliderPosition, togglePlayState, toggleSelector } from '../state/slices/mediaPlayerSlice';
-import '../styles/media-player.css';
+import './media-player.css';
 
 function handleSeekMeasure() {
     //update measure location, then update slider location

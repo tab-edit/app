@@ -12,23 +12,27 @@
 }
 
 .App {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--bg-color);
+    display: grid;
+    grid-template-rows: max-content 1fr max-content;
+    grid-template-columns: max-content 1fr max-content;
+    grid-template-areas: 
+        "header         header   header"
+        "sidebar-left   main     sidebar-right"
+        "footer         footer   footer";
     height: 100vh;
-    color: var(--primary-color);
     max-height: 100vh;
+    color: var(--primary-color);
+    background-color: var(--bg-color);
 }
 
-#app-center {
-    flex-grow: 1;
-    display: flex;
+.App>div {
+    border: var(--border-style) !important;
 }
 
-#menu-bar {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: var(--padding-small);
-    border: var(--border-style);
-}
+
+
+#menu-bar { grid-area: header; }
+#main-view { grid-area: main; }
+.sb-left { grid-area: sidebar-left; }
+.sb-right { grid-area: sidebar-right; }
+#media-player { grid-area: footer; }

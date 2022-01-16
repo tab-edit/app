@@ -1,9 +1,9 @@
 import Splitter from '@devbookhq/splitter';
 import React from 'react';
-import { useAppSelector } from '../../state/hooks';
-import '../../styles/main-view.css';
-import { sidebarItems } from '../sidebars/sidebar-items/index';
-import Editor from './editor/Editor';
+import { useAppSelector } from '../state/hooks';
+import './main-view.css';
+import { sidebarItems } from './sidebar-items/index';
+import Editor from './Editor';
 
 function MainView(props:any) {
     const viewState = useAppSelector((state) => state.view);

@@ -18,6 +18,7 @@
     margin: 0;
     border: none;
     padding: var(--padding-small);
+    user-select: none;
 }
 .sb-item-right {
     writing-mode: vertical-rl;
