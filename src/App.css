@@ -36,3 +36,13 @@
 .sb-left { grid-area: sidebar-left; }
 .sb-right { grid-area: sidebar-right; }
 #media-player { grid-area: footer; }
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

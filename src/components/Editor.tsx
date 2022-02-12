@@ -23,9 +23,14 @@ function createLinterExtension(tablintrc:any) {
 let lintCompartment = new Compartment();
 let langCompartment = new Compartment();
 
+export const editorState:{view:EditorView|null} = {
+    view: null
+}
+
 function Editor(props:Props = defaultProps) {
     const editorRef = useRef<HTMLDivElement>(null);
     const [view, setView] = useState<EditorView>();
+    
 
     useEffect(() => {
         const s = EditorState.create({
@@ -40,6 +45,7 @@ function Editor(props:Props = defaultProps) {
             parent: editorRef.current!
         });
         setView(v);
+        editorState.view = v;
         return () => {
             v?.destroy();
         }

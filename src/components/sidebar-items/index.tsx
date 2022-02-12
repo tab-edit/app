@@ -1,4 +1,5 @@
-import { GitHub, StickyNote2 } from "@mui/icons-material"
+import { BugReport, GitHub, StickyNote2 } from "@mui/icons-material"
+import DebugView from "./DebugView";
 import SheetView from './SheetView'
 
 type SidebarItem = {
@@ -13,6 +14,11 @@ export const sidebarItems:{[name:string]: SidebarItem} = {
         position: 'right',
         icon: <StickyNote2 />,
         view: <SheetView />
+    },
+    "Debug View": {
+        position: 'left',
+        icon: <BugReport />,
+        view: <DebugView />
     },
     "Github": {
         position: 'left',

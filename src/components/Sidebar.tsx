@@ -18,7 +18,7 @@ function Sidebar(props:{position:'left'|'right', className?:string}) {
 
         (sidebarItem.align==='bottom' ? sbItemsBottomJSX : sbItemsTopJSX).push(
             <div className={`sidebar-item sb-item-${sidebarItem.position}`} key={count} onClick={() => dispatch(sidebarItemClicked(name))}>
-                { sidebarItem.position==='right' ? name : sidebarItem.icon }
+                { sidebarItem.position==='right' ? name : tooltipWrapper(name, sidebarItem.icon) }
             </div>
         )
     }
@@ -27,6 +27,15 @@ function Sidebar(props:{position:'left'|'right', className?:string}) {
             <div className='sb-top'>{sbItemsTopJSX}</div>
             <Divider />
             <div className='sb-bottom'>{sbItemsBottomJSX}</div>
+        </div>
+    )
+}
+
+function tooltipWrapper(text:string, node: any) {
+    return (
+        <div className="tooltip">
+            {node}
+            <span className="tooltiptext"></span>
         </div>
     )
 }
