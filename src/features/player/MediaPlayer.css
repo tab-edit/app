@@ -1,0 +1,21 @@
+#media-player {
+    border: var(--border-style);
+    display: flex;
+    align-items: center;
+}
+
+#media-player > * {
+    margin: 0 var(--padding-small);
+}
+
+#media-player .MuiSlider-thumb {
+    border-radius: 1px;
+    width: .7em;
+}
+
+#locate-measure {
+    display: flex;
+}
+#locate-measure input[type=text] {
+    width: 4rem;
+}

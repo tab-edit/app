@@ -1,0 +1,14 @@
+@import '../../theme.css';
+
+#editor {
+    /* width: auto; */
+    /* overflow: hidden; */
+    height: 100%;
+}
+
+.cm-editor {
+    height: 100%;
+    width: 100%;
+}
+
+.cm-scroller { overflow: auto; }

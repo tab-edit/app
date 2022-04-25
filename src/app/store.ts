@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import sidebarReducer from '../features/sidebar/sidebarSlice';
+import mediaPlayerReducer from '../features/player/mediaPlayerSlice';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    sidebar: sidebarReducer,
+    player: mediaPlayerReducer
   },
 });
 

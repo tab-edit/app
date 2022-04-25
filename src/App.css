@@ -1,39 +1,35 @@
 .App {
-  text-align: center;
+  display: grid;
+  grid-template-rows: max-content 1fr max-content;
+  grid-template-columns: max-content 1fr max-content;
+  grid-template-areas: 
+      "header         header   header"
+      "left-sidebar   main     right-sidebar"
+      "footer         footer   footer";
+  height: 100vh;
+  max-height: 100vh;
+  color: var(--primary-color);
+  background-color: var(--bg-color);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.App>div {
+  border: var(--border-style) !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-float infinite 3s ease-in-out;
-  }
-}
 
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-}
 
-.App-link {
-  color: rgb(112, 76, 182);
-}
+#menu-bar { grid-area: header; }
+#main-view { grid-area: main; }
+#left-sidebar { grid-area: left-sidebar; }
+#right-sidebar { grid-area: right-sidebar; }
+#media-player { grid-area: footer; }
 
-@keyframes App-logo-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+.tooltip .tooltiptext {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }

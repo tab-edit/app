@@ -1,0 +1,22 @@
+
+#main-view {
+    overflow: auto;
+}
+
+#main-view .__dbk__child-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+#main-view .__dbk__child-wrapper > div {
+    flex-grow: 1;
+}
+
+#main-view .split-view-gutter {
+    background-color: var(--border-color);
+}
+
+#main-view .split-view-dragger {
+    display: none;
+}
