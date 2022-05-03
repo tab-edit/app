@@ -1,13 +1,19 @@
+import { syntaxTree } from "@codemirror/language";
 import { useState } from "react";
-import { TabTree } from "tab-ast";
+import { tabSyntaxTree, TabTree } from "tab-ast";
+import { editorViewForDebug } from "../../editor/Editor";
 
 function DebugView() {
-    const [tree, setTree] = useState<TabTree|null>(null);
+    const [tree, setTree] = useState<any|null>(null);
 
-    //onClick={() => setTree(editorState.view ? tabSyntaxTree(editorState.view.state) : tree)}
     return (
         <div className='sheet-view'>
-            <button>Refresh Syntax Tree</button> <br/>
+            <button 
+                onClick={() => setTree(editorViewForDebug ? tabSyntaxTree(editorViewForDebug.state) : tree)}
+            >
+                Refresh Syntax Tree
+            </button>
+            <br/>
             <code style={{whiteSpace: "pre"}}>{prettyPrint(tree?.toString() || "Nothing!")}</code>
         </div>
     )

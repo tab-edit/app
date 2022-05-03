@@ -17,14 +17,14 @@ function App() {
           <Sidebar 
             id="left-sidebar"
             views={leftSidebarViews} 
-            style="icons" 
+            iconStyle="icons" 
             onClick={(viewId) => dispatch(sidebarClicked(viewId, 'left'))} 
           />
           <MainView />
           <Sidebar 
             id="right-sidebar"
             views={rightSidebarViews} 
-            style="text-right" 
+            iconStyle="text-right" 
             onClick={(viewId) => dispatch(sidebarClicked(viewId, 'right'))} 
           />
           <MediaPlayer />
