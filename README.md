@@ -1,8 +1,8 @@
-You can see a live preview of the app [here](https://tab-edit.github.io/tab-edit/)
-Currently, only syntax highlighting for guitar ascii tabs is fully functional. Other features of the app are being actively developed.
+An editor for ascii music tablature files. You can see a live preview of this app [here](https://tab-edit.github.io/tab-edit/)
+This project is planned to support linting and playing of tablature files, as well as conversion into the MusicXML format and pdf previews of the tablature score.
 
-This is a large scale personal project re-envisioning a previous personal project ([TAB2XML](https://github.com/Stan15/TAB2XML)) with modern web tools. This project has dependencies on [3 other ongoing projects](https://github.com/Stan15?tab=projects) which I am actively developing as part of this effort. All together, the system should parse, lint, play and convert free-form ascii music tablature notation into the MusicXML format.
+The project implements an [incremental parsing system](https://github.com/tab-edit/tab-ast) to generate a symantically consistent abstract syntax tree for the unique semantics of tablature files.
 
-I made the choice to use CodeMirror6 and the Lezer parser (instead of RegEx which I used in the previous project) to allow for efficient incremental reparsing of ascii tabs. [The linter](https://github.com/Stan15/tablint) I am actively developing is heavily inspired by "ESLint". This enables a high level of user customization and allows for user-defined tablature linting rules to be supported for music tablature.
+It also implements an extensible rule-based [state management system](https://github.com/tab-edit/tab-state), inspired by the [eslint](https://github.com/eslint/eslint) project, which makes it possible to implement custom features like linting or MusicXML conversion by simply defining a set of rules which extend on the state of the system.
 
-As I mentioned before, this is a large project and it is very much a work in progress.
+Work on this project is currently underway and is still in its very early stages.
