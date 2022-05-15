@@ -3,6 +3,6 @@ This project is planned to support linting and playing of tablature files, as we
 
 This project implements an [incremental parsing system](https://github.com/tab-edit/tab-ast) which generate a semantically consistent abstract syntax tree for the unique semantics of music tab text.
 
-It also implements an extensible rule-based [state management system](https://github.com/tab-edit/tab-state), inspired by the [eslint](https://github.com/eslint/eslint) project, which makes it possible to implement custom features like linting or MusicXML conversion by simply defining a set of rules which extend on the state of the system.
+It also implements an extensible rule-based [state management system](https://github.com/tab-edit/tab-state), inspired by the [eslint](https://github.com/eslint/eslint) project, which makes it possible to implement custom features like linting or MusicXML conversion by simply defining a set of rules which extend the state of the system.
 
 Work on this project is currently underway and is still in its very early stages.
