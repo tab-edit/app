@@ -1,10 +1,9 @@
-import { syntaxTree } from "@codemirror/language";
 import { useState } from "react";
 import { tabSyntaxTree, TabTree } from "tab-ast";
 import { editorViewForDebug } from "../../editor/Editor";
 
 function DebugView() {
-    const [tree, setTree] = useState<any|null>(null);
+    const [tree, setTree] = useState<TabTree|null>(null);
 
     return (
         <div className='sheet-view'>
