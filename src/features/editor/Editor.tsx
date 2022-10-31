@@ -1,9 +1,9 @@
-import { basicSetup, EditorView } from "codemirror"
-import { useEffect, useRef } from "react";
 import './Editor.css';
-import { TabLanguage, TabLanguageSupport, ASTParser } from "tab-ast";
-import { LanguageSupport, LRLanguage } from "@codemirror/language";
-import { parser } from "parser-tablature";
+import { useEffect, useRef } from "react";
+import { basicSetup, EditorView } from "codemirror"
+import { TabLanguage, TabLanguageSupport, ASTParser } from "@tab-edit/ast";
+import { parser } from "@tab-edit/parse";
+import { LanguageSupport, LRLanguage } from '@codemirror/language';
 
 export let editorViewForDebug: EditorView;
 function Editor(props:any) {

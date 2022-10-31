@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tabSyntaxTree, TabTree } from "tab-ast";
+import { tabSyntaxTree, TabTree } from "@tab-edit/ast";
 import { editorViewForDebug } from "../../editor/Editor";
 
 function DebugView() {
