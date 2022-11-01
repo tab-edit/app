@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { tabSyntaxTree, TabTree } from "@tab-edit/ast";
+import { abstractSyntaxTree, TabAST } from "@tab-edit/ast";
 import { editorViewForDebug } from "../../editor/Editor";
 
 function DebugView() {
-    const [tree, setTree] = useState<TabTree|null>(null);
+    const [tree, setTree] = useState<TabAST|null>(null);
 
     return (
         <div className='sheet-view'>
             <button 
-                onClick={() => setTree(editorViewForDebug ? tabSyntaxTree(editorViewForDebug.state) : tree)}
+                onClick={() => setTree(editorViewForDebug ? abstractSyntaxTree(editorViewForDebug.state) : tree)}
             >
                 Refresh Syntax Tree
             </button>
