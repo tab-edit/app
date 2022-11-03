@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { tabSyntaxTree, TabTree } from "@tab-edit/ast";
+import { tabSyntaxTree, TabASTree } from "@tab-edit/ast";
 import { editorViewForDebug } from "../../editor/Editor";
 
 function DebugView() {
-    const [tree, setTree] = useState<TabTree|null>(null);
+    const [tree, setTree] = useState<TabASTree|null>(null);
 
     return (
         <div className='sheet-view'>
