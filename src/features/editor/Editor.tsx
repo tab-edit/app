@@ -1,6 +1,6 @@
 import './Editor.css';
 import { useEffect, useRef } from "react";
-import { basicSetup, EditorView } from "codemirror"
+import { basicSetup, EditorView } from "codemirror";
 import { ASTLanguage } from "@tab-edit/ast";
 import { TabModelSupport } from "@tab-edit/model";
 import { parser } from "@tab-edit/parse";
@@ -26,10 +26,6 @@ function Editor(props:any) {
 }
 
 export default Editor;
-
-export function rawTablature() {
-    return new LanguageSupport(rawTabLanguage)
-}
 
 export const rawTabLanguage = LRLanguage.define({
     parser: parser.configure({
