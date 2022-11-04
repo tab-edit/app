@@ -11,7 +11,7 @@
     "@mui/icons-material": "^5.6.2",
     "@mui/material": "^5.6.2",
     "@reduxjs/toolkit": "^1.8.1",
-    "@tab-edit/ast": "github:tab-edit/ast",
+    "@tab-edit/ast": "github:tab-edit/ast#dev",
     "@tab-edit/parse": "github:tab-edit/parse",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",

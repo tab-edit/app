@@ -1,7 +1,8 @@
 import './Editor.css';
 import { useEffect, useRef } from "react";
 import { basicSetup, EditorView } from "codemirror"
-import { TabLanguage, TabLanguageSupport, ASTParser } from "@tab-edit/ast";
+import { ASTLanguage } from "@tab-edit/ast";
+import { TabModelSupport } from "@tab-edit/model";
 import { parser } from "@tab-edit/parse";
 import { LanguageSupport, LRLanguage } from '@codemirror/language';
 
@@ -10,7 +11,7 @@ function Editor(props:any) {
     const editorRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const tab = tablatureAST()
+        const tab = new TabModelSupport(ASTLanguage.define({}), rawTabLanguage)
         editorViewForDebug = new EditorView({
             doc: "",
             extensions: [
@@ -26,21 +27,12 @@ function Editor(props:any) {
 
 export default Editor;
 
-export function tablatureAST() {
-    return new TabLanguageSupport(tablatureASTLanguage, rawTablature());
+export function rawTablature() {
+    return new LanguageSupport(rawTabLanguage)
 }
-
-
-export const tablatureASTLanguage = TabLanguage.define({
-    parser: new ASTParser()
-});
 
 export const rawTabLanguage = LRLanguage.define({
     parser: parser.configure({
         props: []
     })
 })
-
-export function rawTablature() {
-    return new LanguageSupport(rawTabLanguage)
-}
