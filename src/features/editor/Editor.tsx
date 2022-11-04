@@ -1,6 +1,6 @@
 import './Editor.css';
 import { useEffect, useRef } from "react";
-import { basicSetup, EditorView } from "codemirror"
+import { basicSetup, EditorView } from "codemirror";
 import { TabLanguage, ASTParser } from "@tab-edit/ast";
 import { parser } from "@tab-edit/parse";
 import { LRLanguage } from '@codemirror/language';
